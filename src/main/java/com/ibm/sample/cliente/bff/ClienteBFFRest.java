@@ -251,7 +251,7 @@ public class ClienteBFFRest {
 			tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS,h1);
 			HttpEntity<String> entity = new HttpEntity<>(h1.getHeaders());
 			Object[] param = new Object[0];
-			RetornoCliente cliConsulta = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
+			cliConsulta = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
 			if (cliConsulta.getCodigo().equals("200-FOUND"))
 			{
 				return true;
