@@ -161,7 +161,7 @@ public class ClienteBFFRest {
 			resposta.setCodigo("202-DELETED");
 			resposta.setMensagem("Customer Deletion submited successfully! Customer: " + retorno.getCliente().toString() );
 			logger.info(resposta.getCodigo() + " - " + resposta.getMensagem());
-			Thread.sleep(3000);
+			//Thread.sleep(3000);
 			return ResponseEntity.ok(resposta);
 		}
 		catch (Exception e)
