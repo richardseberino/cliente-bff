@@ -152,14 +152,14 @@ public class ClienteBFFRest {
 			HttpHeaderInjectAdapter h1 = new HttpHeaderInjectAdapter(httpHeaders);
 			tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS,h1);
 			HttpEntity<String> entity = new HttpEntity<>(h1.getHeaders());
-			Object[] param = new Object[0];
-			RetornoCliente retorno = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
-			logger.debug(retorno.getMensagem());
+			//Object[] param = new Object[0];
+			//RetornoCliente retorno = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
+			logger.debug(cliConsulta.getMensagem());
 			logger.debug("Sending message for Kafka Topic to customer be deleted async");
-			enviaMensagemKafka(span, this.deleteTopic, retorno.getCliente());
+			enviaMensagemKafka(span, this.deleteTopic, cliConsulta.getCliente());
 			logger.debug("Message sent to Kafka");
 			resposta.setCodigo("202-DELETED");
-			resposta.setMensagem("Customer Deletion submited successfully! Customer: " + retorno.getCliente().toString() );
+			resposta.setMensagem("Customer Deletion submited successfully! Customer: " + cliConsulta.getCliente().toString() );
 			logger.info(resposta.getCodigo() + " - " + resposta.getMensagem());
 			//Thread.sleep(3000);
 			return ResponseEntity.ok(resposta);
@@ -240,7 +240,7 @@ public class ClienteBFFRest {
 			span.finish();
 		}
 	}
-	
+	private RetornoCliente cliConsulta=null;
 	private boolean clienteExiste(Span spanPai, Long cpf)
 	{
 		Span span = tracer.buildSpan("verificaClienteExiste").asChildOf(spanPai).start();
@@ -251,8 +251,8 @@ public class ClienteBFFRest {
 			tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS,h1);
 			HttpEntity<String> entity = new HttpEntity<>(h1.getHeaders());
 			Object[] param = new Object[0];
-			RetornoCliente resultado = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
-			if (resultado.getCodigo().equals("200-FOUND"))
+			RetornoCliente cliConsulta = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
+			if (cliConsulta.getCodigo().equals("200-FOUND"))
 			{
 				return true;
 			}
