@@ -121,7 +121,7 @@ public class ClienteBFFRest {
 			span.setTag("error",true);
 			span.setTag("ErrorMessage", e.getMessage());
 			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			
 		}
 		finally{
