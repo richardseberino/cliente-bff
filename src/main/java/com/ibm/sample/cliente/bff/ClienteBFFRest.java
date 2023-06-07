@@ -265,7 +265,7 @@ public class ClienteBFFRest {
 		finally {
 			span.finish();
 		}
-		return false;
+		//return false;
 	}
 	
 	private void validaCliente(Cliente cliente) throws Exception
