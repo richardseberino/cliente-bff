@@ -146,7 +146,7 @@ public class ClienteBFFRest {
 			{
 				logger.warn("Customer requested to be deleted does not exist with this ID: " + cpf);
 				span.log("Customer requested to be deleted does not exist with this ID: " + cpf);
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}	
 			HttpHeaders httpHeaders = new HttpHeaders();
 			HttpHeaderInjectAdapter h1 = new HttpHeaderInjectAdapter(httpHeaders);
