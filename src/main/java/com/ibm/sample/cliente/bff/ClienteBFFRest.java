@@ -241,7 +241,7 @@ public class ClienteBFFRest {
 		}
 	}
 	private RetornoCliente cliConsulta=null;
-	private boolean clienteExiste(Span spanPai, Long cpf)
+	private boolean clienteExiste(Span spanPai, Long cpf) throws Exception
 	{
 		Span span = tracer.buildSpan("verificaClienteExiste").asChildOf(spanPai).start();
 		try
@@ -256,10 +256,11 @@ public class ClienteBFFRest {
 			{
 				return true;
 			}
+			return false;
 		}
 		catch (Exception e)
 		{
-			
+			throw new Exception("Error to Search for a customer! " + e.getMessage());
 		}
 		finally {
 			span.finish();
