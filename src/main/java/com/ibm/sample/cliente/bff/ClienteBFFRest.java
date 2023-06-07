@@ -252,7 +252,7 @@ public class ClienteBFFRest {
 			HttpEntity<String> entity = new HttpEntity<>(h1.getHeaders());
 			Object[] param = new Object[0];
 			cliConsulta = clienteRest.exchange(urlClienteRest+"/" + cpf, HttpMethod.GET,entity, RetornoCliente.class, param).getBody();
-			if (cliConsulta.getCodigo().equals("200-FOUND"))
+			if (cliConsulta!=null && cliConsulta.getCodigo()!=null && cliConsulta.getCodigo().equals("200-FOUND"))
 			{
 				return true;
 			}
