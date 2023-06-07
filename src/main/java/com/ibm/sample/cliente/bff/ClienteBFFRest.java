@@ -260,12 +260,12 @@ public class ClienteBFFRest {
 		}
 		catch (Exception e)
 		{
-			throw new Exception("Error to Search for a customer! " + e.getMessage());
+			//throw new Exception("Error to Search for a customer! " + e.getMessage());
 		}
 		finally {
 			span.finish();
 		}
-		//return false;
+		return false;
 	}
 	
 	private void validaCliente(Cliente cliente) throws Exception
