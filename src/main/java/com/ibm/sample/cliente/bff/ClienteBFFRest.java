@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -52,6 +53,9 @@ public class ClienteBFFRest {
 
 	@Value("${cliente-kafka-topico}")
 	private String cadastroTopic; 
+
+	@Value("${cliente-update-topico}")
+	private String updateTopic;
 	
 	@Autowired
 	private KafkaTemplate<String, Cliente> kafka;
@@ -215,6 +219,45 @@ public class ClienteBFFRest {
 			span.finish();
 		}
 	}
+
+	@CrossOrigin(origins = "*")
+	@PutMapping("/bff/cliente")
+	public ResponseEntity<RespostaBFF> atualizaCadastro(@RequestBody Cliente cliente)
+	{
+		Span span = tracer.buildSpan("cadastraCliente").start();
+		logger.debug("[processaCadastro] " + cliente.getNome());
+		RespostaBFF resposta = new RespostaBFF();
+		
+		try
+		{
+			logger.debug("Validating the data sent to create a customer record");
+			this.validaCliente(cliente);
+			logger.debug("Customer data validated successfully, verifying if the customer already exists in the database");
+			if (!this.clienteExiste(span,cliente.getCpf()))
+			{
+				logger.info("Customer not found in the database, operation canceled. ID:" + cliente.getCpf());
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} 
+			logger.debug("Sending a message to Kafka topic to be process async");
+			enviaMensagemKafka(span, this.updateTopic, cliente);
+			logger.debug("Message sent to kafka Topic");
+		
+			resposta.setCodigo("200-SUCCESS");
+			resposta.setMensagem("Customer update submited successfully! Customer: " + cliente.toString() );
+			logger.info(resposta.getCodigo() + " - " + resposta.getMensagem());
+			return ResponseEntity.ok(resposta);
+		}
+		catch (Exception e)
+		{
+			logger.error("Error to update customer data: " + cliente.toString() + ", error: "  + e.getMessage());
+			span.setTag("error",true);
+			span.setTag("ErrorMessage", e.getMessage());
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally{
+			span.finish();
+		}
+	}	
 	private void enviaMensagemKafka(Span spanPai,String topico, Cliente cliente)
 	{
 		KafkaHeaderMap h1 = new KafkaHeaderMap();
